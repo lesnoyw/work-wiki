@@ -1,0 +1,7 @@
+# Игнорировать exit code 1 в job
+[ -n "$(podman ps -aqf "name=namecontainer")" ] && docker stop $(podman ps -aqf "name=namecontainer") || true
+
+# Чтобы .gitlab-ci.yaml не ругался на скобках
+stage: somestage
+  script: | 
+    [ -n "$(podman ps -aqf "name=namecontainer")" ] && podman stop $(podman ps -aqf "name=namecontainer") && podman rm $(podman ps -aqf "name=namecontainer") || true

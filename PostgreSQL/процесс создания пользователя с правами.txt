@@ -1,0 +1,21 @@
+#Создание роли с паролем
+CREATE USER username  WITH PASSWORD 'BlaBlaBla';
+
+#Даем право на подключение к базе
+GRANT CONNECT ON DATABASE base TO username;
+
+#Даем право использовать схемы в базе (иначе нельзя смотреть таблицы, даже с правами на них)
+GRANT USAGE ON ALL SCHEMAS bublic, public, rublic TO username;
+
+#Нужный грант (SELECT, INSERT, ALL и тд)
+GRANT SELECT ON ALL TABLES IN SCHEMA bublic, public, rublic TO username;
+
+GRANT SELECT ON TABLE  IN SCHEMA  bublic, public, rublic TO username;
+
+#На функции отдельные гранты
+GRANT ALL ON ALL FUNCTIONS IN SCHEMA bublic, public, rublic TO username;
+
+#Просмотр прав на таблицы у роли
+SELECT table_catalog, table_schema, table_name, privilege_type
+FROM information_schema.table_privileges
+WHERE grantee = 'svc_qlikconnect_test';

@@ -1,0 +1,31 @@
+- разворачиваешь дамп, выдаешь все права, меняешь владельца
+- останавливают ПО
+- меняешь названия целевую в какой-нибудь _bak, а дамп переименовываешь в целевую бд
+
+pg_dump --dbname=blabla -Fc -x -v -f blabla.dump_23_06_2021
+
+scp blabla.dump_23_06_2021 user@host.ru:/home/user/
+
+sudo chown postgres:postgres blabla.dump_23_06_2021
+sudo mv blabla.dump_23_06_2021 /var/lib/pgsql
+
+create database recovery_23_06_2021;
+
+pg_restore -d recovery_23_06_2021 blabla.dump_23_06_2021 
+
+tail -n 100 .psql_history 
+
+alter database "recovery_23_06_2021" owner to owner_target_base;
+
+GRANT ALL PRIVILEGES ON DATABASE "recovery_23_06_2021" TO target_base_role ;
+
+GRANT connect ON DATABASE "recovery_23_06_2021" TO target_base_role;
+
+alter database "target_base" rename to "target_base-back";
+
+alter database "recovery_23_06_2021" rename to "target_base";
+
+drop database "target_base-back";
+
+#Если надо завалить мешающий процесс
+SELECT pg_terminate_backend(27848);

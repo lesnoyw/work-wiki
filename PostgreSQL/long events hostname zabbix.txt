@@ -1,0 +1,11 @@
+SELECT e.eventid,e.source,e.object,e.objectid,e.acknowledged,to_timestamp(e.clock) as date,e.ns,e.severity,e.name,er1.r_eventid,h.name as host
+FROM events e 
+LEFT JOIN event_recovery er1 
+ON e.eventid=er1.eventid 
+JOIN triggers t ON e.objectid = t.triggerid
+JOIN functions f ON f.triggerid = t.triggerid
+JOIN items i ON i.itemid = f.itemid
+JOIN hosts h ON i.hostid = h.hostid
+WHERE e.source='0' AND e.object='0' AND e.objectid=254324 AND e.eventid<='250964167' AND e.value=1 
+ORDER BY e.clock DESC,e.eventid DESC 
+LIMIT 20 \gx

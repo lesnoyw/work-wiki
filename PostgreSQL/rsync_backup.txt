@@ -1,0 +1,18 @@
+#Монтированеи директории (в dom=домен хоста ораганизации)
+sudo  mount.cifs //host.ru/DIR /tmp/dir -o user=host_user,pass='pass',dom=ru,vers=2.0
+
+#Перенос файла
+sudo  nohup rsync --remove-source-files --whole-file --checksum --verbose --progress --stats /local_backups/Backup-11112020/base.tar.gz /tmp/pega_backups/base.tar_11112020.gz &
+
+tail -f nohup.out смотреть за прогрессом 
+
+
+- если копирование пройдет успешно, то директория /local_backups/Backup-%DATE%/ -  будет пустой, и ее можно удалить через rmdir  
+- ну и после отключить удаленный диск через umount /tmp/pega_backups
+- все маневры делаются либо через судо либо из под рута, иначе он не даст смонтировать итд + за датой архива следить надо 
+
+
+nohup rsync --remove-source-files --whole-file --checksum --verbose --progress --stats /local_backups/Backup-11112020/base.tar.gz /tmp/pega_backups/base.tar_11112020.gz
+
+#Посмотреть размер архива, по нему можно понять, битый или нет
+sudo ls Backup-* -alh | grep base

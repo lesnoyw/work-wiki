@@ -1,0 +1,63 @@
+#Вычисление размеров таблиц
+
+1 вариант
+SELECT nspname || '.' || relname AS "relation",
+    pg_size_pretty(pg_relation_size(C.oid)) AS "size"
+  FROM pg_class C
+  LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
+  WHERE nspname is NOT  ('pg_catalog', 'information_schema', 'history_uint_old', 'history_newidx')
+  ORDER BY pg_relation_size(C.oid) DESC;
+  
+2 вариант 
+select table_name, pg_size_pretty( pg_total_relation_size(table_name)) 
+from information_schema.tables 
+where 
+table_catalog = 'zabbix_prod';
+
+3 вариант
+SELECT nspname || '.' || relname AS "relation",
+    pg_size_pretty(pg_relation_size(C.oid)) AS "size"
+  FROM pg_class C
+  LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
+  WHERE nspname NOT IN ('pg_catalog', 'information_schema')
+  ORDER BY pg_relation_size(C.oid) DESC;
+
+4 вариант
+SELECT nspname || '.' || relname AS "relation",
+    pg_size_pretty(pg_relation_size(C.oid)) AS "size"
+  FROM pg_class C
+  LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
+  WHERE nspname NOT IN ('pg_catalog', 'information_schema')
+  ORDER BY pg_relation_size(C.oid) DESC
+  LIMIT 20;
+
+5 вариант
+SELECT pg_size_pretty( pg_total_relation_size( 'tablename' ) );
+
+#Поиск таблиц
+
+SELECT * FROM pgstattuple_approx('schema.tablename');
+
+SELECT data_type FROM information_schema.columns
+WHERE table_name = 'tablename'
+AND column_name = 'tablecolumn';
+
+
+#Найти принадлежащие роли объекты.
+Где relkind = 
+S – последовательность 
+r – таблица 
+i – индекс 
+v – представление 
+
+SELECT 
+    n.nspname AS schema_name,
+    c.relname AS rel_name,
+    c.relkind AS rel_kind,
+    pg_get_userbyid(c.relowner) AS owner_name
+  FROM pg_class c
+  JOIN pg_namespace n ON n.oid = c.relnamespace
+where pg_get_userbyid(c.relowner) = 'user_role'
+and n.nspname = 'data'
+and c.relkind = 'r'
+;
